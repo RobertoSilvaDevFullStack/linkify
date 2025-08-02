@@ -21,11 +21,5 @@
   ],
   "env": {
     "PYTHONPATH": "./"
-  },
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 30
-    }
-  },
-  "outputDirectory": "dist"
+  }
 }

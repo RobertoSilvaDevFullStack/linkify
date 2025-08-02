@@ -1,0 +1,30 @@
+# Arquivos locais
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.db
+
+# Ambiente virtual
+venv/
+env/
+
+# Arquivos IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Arquivos temporários
+.DS_Store
+Thumbs.db
+
+# Arquivos de teste
+test_*
+*_test.py
+
+# Backup
+*.bak
+*.backup

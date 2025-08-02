@@ -606,6 +606,14 @@ def get_or_create_oauth_user(db: Session, user_info: dict, provider: str):
     db.refresh(user)
     return user
 
+# Inicialização automática do banco em produção
+try:
+    # Criar tabelas automaticamente
+    Base.metadata.create_all(bind=engine)
+    print("✅ Database tables created successfully")
+except Exception as e:
+    print(f"⚠️  Database initialization warning: {e}")
+
 if __name__ == "__main__":
     # Create test user
     create_test_user()

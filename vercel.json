@@ -2,24 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
+      "src": "api/test.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/frontend/static/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/api/index.py"
+      "dest": "/api/test.py"
     }
-  ],
-  "env": {
-    "PYTHONPATH": "./"
-  }
+  ]
 }

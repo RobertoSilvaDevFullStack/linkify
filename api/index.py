@@ -1,5 +1,5 @@
 """
-Entrada principal para Vercel - Versão robusta
+Entrada principal para Vercel - Versão de produção
 """
 import os
 import sys
@@ -9,42 +9,40 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
-print(f"📍 Current directory: {current_dir}")
-print(f"📁 Parent directory: {parent_dir}")
-print(f"🐍 Python path: {sys.path}")
-
-# Tentar importar aplicação principal
 try:
-    print("🔄 Tentando importar aplicação principal...")
-    from simple_app import app
-    print("✅ Aplicação importada com sucesso!")
+    # Importar a aplicação principal
+    from main import app
+    print("✅ Aplicação principal importada com sucesso!")
     
 except Exception as e:
-    print(f"❌ Erro ao importar: {e}")
-    print("🔄 Criando aplicação de fallback...")
+    print(f"❌ Erro ao importar main.py: {e}")
     
+    # Fallback - criar aplicação básica
     from fastapi import FastAPI
-    app = FastAPI(title="Linkify Fallback")
+    from fastapi.responses import HTMLResponse
     
-    @app.get("/")
+    app = FastAPI(title="Linkify")
+    
+    @app.get("/", response_class=HTMLResponse)
     def fallback():
-        return {
-            "status": "fallback_mode",
-            "error": str(e),
-            "message": "Aplicação em modo de emergência",
-            "python_path": sys.path,
-            "current_dir": current_dir
-        }
+        return """
+        <html>
+            <head><title>Linkify - Carregando</title></head>
+            <body style="font-family: Arial; text-align: center; padding: 50px;">
+                <h1>🔗 Linkify</h1>
+                <p>Aplicação está inicializando...</p>
+                <p>Aguarde um momento.</p>
+            </body>
+        </html>
+        """
+    
+    @app.get("/health")
+    def health():
+        return {"status": "fallback_mode", "error": str(e)}
 
 # Handler para Vercel
 def handler(event, context):
     return app
 
-# Export da aplicação
+# Export da aplicação  
 __all__ = ["app", "handler"]
-
-# Para teste local
-if __name__ == "__main__":
-    print("🧪 Teste local da aplicação Vercel")
-    print(f"App type: {type(app)}")
-    print("✅ Aplicação carregada com sucesso!")

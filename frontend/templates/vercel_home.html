@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linkify - Funcionando!</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        .status {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+        }
+        .success { color: #28a745; }
+        .warning { color: #ffc107; }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🔗</div>
+        <h1>Linkify</h1>
+        <p>Encurtador de URLs está funcionando no Vercel!</p>
+        
+        <div class="status">
+            <h3>Status do Deploy</h3>
+            <div class="status-item">
+                <span>FastAPI</span>
+                <span class="success">✅ Funcionando</span>
+            </div>
+            <div class="status-item">
+                <span>Vercel</span>
+                <span class="success">✅ Ativo</span>
+            </div>
+            <div class="status-item">
+                <span>Templates</span>
+                <span class="success">✅ Carregados</span>
+            </div>
+            <div class="status-item">
+                <span>Database</span>
+                <span class="warning">⏳ Aguardando configuração</span>
+            </div>
+            <div class="status-item">
+                <span>OAuth</span>
+                <span class="warning">⏳ Aguardando configuração</span>
+            </div>
+        </div>
+        
+        <div>
+            <a href="/health" class="btn">Health Check</a>
+            <a href="/test" class="btn">Teste API</a>
+        </div>
+        
+        <p><small>Configure DATABASE_URL e credenciais OAuth nas variáveis de ambiente do Vercel para funcionalidade completa.</small></p>
+    </div>
+</body>
+</html>

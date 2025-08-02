@@ -623,8 +623,8 @@ if __name__ == "__main__":
     os.makedirs("frontend/static", exist_ok=True)
     
     print("🚀 Starting Linkify server...")
-    print("📱 Frontend: http://localhost:8000")
-    print("🔧 API Docs: http://localhost:8000/docs")
+    print("📱 Frontend: http://localhost:8001")
+    print("🔧 API Docs: http://localhost:8001/docs")
     print("👤 Test Login: testuser / testpass123")
     
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8001)

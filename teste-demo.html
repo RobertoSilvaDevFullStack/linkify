@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Endpoint Demo</title>
+</head>
+<body>
+    <h1>Teste do Endpoint Demo</h1>
+    <button onclick="testarDemo()">Testar Link Demo</button>
+    <div id="resultado"></div>
+    
+    <script>
+    async function testarDemo() {
+        const resultado = document.getElementById('resultado');
+        
+        try {
+            console.log('Testando endpoint demo...');
+            
+            const response = await fetch('http://localhost:8000/api/links/demo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    original_url: 'https://www.google.com'
+                })
+            });
+            
+            console.log('Response status:', response.status);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Sucesso:', data);
+                resultado.innerHTML = `
+                    <h3 style="color: green;">LINK DEMO CRIADO!</h3>
+                    <p><strong>Short Code:</strong> ${data.short_code}</p>
+                    <p><strong>URL Original:</strong> ${data.original_url}</p>
+                    <p><strong>Link:</strong> <a href="http://localhost:8000/${data.short_code}" target="_blank">http://localhost:8000/${data.short_code}</a></p>
+                    <p><strong>Expira em:</strong> ${data.expires_at}</p>
+                `;
+            } else {
+                const errorData = await response.text();
+                console.error('Erro:', errorData);
+                resultado.innerHTML = '<p style="color: red;">ERRO: ' + errorData + '</p>';
+            }
+        } catch (error) {
+            console.error('Erro de rede:', error);
+            resultado.innerHTML = '<p style="color: red;">ERRO DE REDE: ' + error.message + '</p>';
+        }
+    }
+    </script>
+</body>
+</html>

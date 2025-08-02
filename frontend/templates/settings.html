@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Linkify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .sidebar-active { 
+            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 0 25px 25px 0;
+        }
+        .link-item:hover { background-color: #f9fafb; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-gray-900 text-white flex flex-col">
+            <!-- Logo -->
+            <div class="p-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-link text-gray-900 text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-bold">Linkify</h1>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 px-4">
+                <div class="space-y-2">
+                    <a href="/dashboard" class="block px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-home w-5"></i>
+                            <span class="font-medium">Painel</span>
+                        </div>
+                    </a>
+                    <div class="px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors" onclick="showCreateLinkModal()">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-plus w-5"></i>
+                            <span class="font-medium">Criar Novo Link</span>
+                        </div>
+                    </div>
+                    <a href="/analytics" class="block px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-chart-bar w-5"></i>
+                            <span class="font-medium">Análises</span>
+                        </div>
+                    </a>
+                    <div class="px-4 py-3 sidebar-active mr-4">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-cog w-5"></i>
+                            <span class="font-medium">Configurações</span>
+                        </div>
+                    </div>
+                    <a href="/profile" class="block px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-user w-5"></i>
+                            <span class="font-medium">Perfil</span>
+                        </div>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-6 border-t border-gray-700">
+                <a href="/profile" class="flex items-center space-x-3 hover:bg-gray-800 p-2 rounded-lg transition-colors">
+                    <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-xs"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-white font-medium text-sm" id="username">testuser</div>
+                        <div class="text-gray-400 text-xs">Ver Perfil</div>
+                    </div>
+                    <button onclick="logout()" class="text-gray-400 hover:text-red-400 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="bg-white shadow-sm border-b p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Configurações</h2>
+                        <p class="text-gray-600 mt-1">Gerencie suas preferências de conta e configurações</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-palette text-blue-500"></i>
+                            <span class="text-blue-700 font-medium">Tailwind CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 overflow-auto p-6">
+                <!-- Seções de Configurações -->
+                <div class="space-y-8">
+                <!-- Configurações da Conta -->
+                <div class="bg-white rounded-xl card-shadow">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Configurações da Conta</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Alterar Senha -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Alterar Senha</h4>
+                            <form id="passwordForm" class="space-y-4">
+                                <div>
+                                    <label for="currentPassword" class="block text-sm font-medium text-gray-700">Senha Atual</label>
+                                    <input type="password" id="currentPassword" name="currentPassword" 
+                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="newPassword" class="block text-sm font-medium text-gray-700">Nova Senha</label>
+                                    <input type="password" id="newPassword" name="newPassword" 
+                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirmar Nova Senha</label>
+                                    <input type="password" id="confirmPassword" name="confirmPassword" 
+                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                    Atualizar Senha
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Link Settings -->
+                <div class="bg-white rounded-xl card-shadow">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Configurações de Link</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Default Expiration -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Expiração Padrão do Link</h4>
+                            <select id="defaultExpiration" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="never">Nunca expiram</option>
+                                <option value="1">1 dia</option>
+                                <option value="7">1 semana</option>
+                                <option value="30">1 mês</option>
+                                <option value="90">3 meses</option>
+                                <option value="365">1 ano</option>
+                            </select>
+                        </div>
+
+                        <!-- Custom Domain -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Domínio Personalizado</h4>
+                            <div class="flex space-x-3">
+                                <input type="text" id="customDomain" placeholder="seu-domínio.com" 
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <button onclick="saveCustomDomain()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                    Salvar
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Configure um domínio personalizado para seus links encurtados </p>
+                        </div>
+
+                        <!-- Link Privacy -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Privacidade Padrão dos Links</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="privacy" value="public" class="mr-2">
+                                    <span class="text-sm text-gray-700">Público - Qualquer pessoa pode ver as estatísticas do link</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="privacy" value="private" class="mr-2" checked>
+                                    <span class="text-sm text-gray-700">Privado - Apenas você pode ver as estatísticas</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configurações de Notificação -->
+                <div class="bg-white rounded-xl card-shadow">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Notificações</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Notificações por Email -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Notificações por Email</h4>
+                            <div class="space-y-3">
+                                <label class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">Notificações de cliques nos links</span>
+                                    <input type="checkbox" id="clickNotifications" class="toggle-checkbox">
+                                </label>
+                                <label class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">Relatório semanal de análises</span>
+                                    <input type="checkbox" id="weeklyReport" class="toggle-checkbox" checked>
+                                </label>
+                                <label class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">Avisos de expiração de links</span>
+                                    <input type="checkbox" id="expirationWarnings" class="toggle-checkbox" checked>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configurações da API -->
+                <div class="bg-white rounded-xl card-shadow">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Acesso à API</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Chave da API -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Chave da API</h4>
+                            <div class="flex space-x-3">
+                                <input type="text" id="apiKey" readonly placeholder="Clique em gerar para criar a chave da API" 
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                                <button onclick="generateApiKey()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                                    Gerar
+                                </button>
+                                <button onclick="copyApiKey()" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
+                                    Copiar
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Use esta chave para acessar a API do Linkify programaticamente</p>
+                        </div>
+
+                        <!-- Documentação da API -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Documentação da API</h4>
+                            <a href="/docs" target="_blank" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-external-link-alt mr-2"></i>
+                                Ver Documentação da API
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zona de Perigo -->
+                <div class="bg-white rounded-xl card-shadow border-l-4 border-red-500">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-red-600">Zona de Perigo</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Excluir Conta -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Excluir Conta</h4>
+                            <p class="text-sm text-gray-600 mb-4">
+                                Uma vez que você excluir sua conta, não há como voltar atrás. Todos os seus links e estatísticas serão permanentemente excluídos.
+                            </p>
+                            <button onclick="showDeleteModal()" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors">
+                                Excluir Conta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Excluir Conta -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Confirmar Exclusão da Conta</h3>
+            <p class="text-gray-600 mb-6">
+                Tem certeza de que deseja excluir sua conta? Esta ação não pode ser desfeita.
+            </p>
+            <div class="flex space-x-3">
+                <button onclick="hideDeleteModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="deleteAccount()" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors">
+                    Excluir Conta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAuthenticated = false;
+        
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+            console.log('Settings: Checking auth, token:', token ? 'exists' : 'not found');
+            
+            if (!token) {
+                console.log('Settings: No token found, showing login message');
+                document.body.innerHTML = `
+                    <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-800 mb-2">Autenticação Necessária</h3>
+                            <p class="text-gray-600 mb-4">Por favor, faça login para acessar as configurações</p>
+                            <a href="/login" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                Fazer Login
+                            </a>
+                        </div>
+                    </div>
+                `;
+                return false;
+            }
+            
+            isAuthenticated = true;
+            return true;
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+            localStorage.removeItem('linkify_user');
+            window.location.href = '/login';
+        }
+
+        // Load settings
+        function loadSettings() {
+            // Load saved settings from localStorage or API
+            const savedExpiration = localStorage.getItem('defaultExpiration') || 'never';
+            document.getElementById('defaultExpiration').value = savedExpiration;
+
+            const savedDomain = localStorage.getItem('customDomain') || '';
+            document.getElementById('customDomain').value = savedDomain;
+
+            const savedApiKey = localStorage.getItem('apiKey') || '';
+            document.getElementById('apiKey').value = savedApiKey;
+        }
+
+        // Save settings
+        function saveSettings() {
+            const defaultExpiration = document.getElementById('defaultExpiration').value;
+            const customDomain = document.getElementById('customDomain').value;
+            const privacy = document.querySelector('input[name="privacy"]:checked').value;
+            
+            // Save to localStorage (in a real app, this would be saved to the server)
+            localStorage.setItem('defaultExpiration', defaultExpiration);
+            localStorage.setItem('customDomain', customDomain);
+            localStorage.setItem('defaultPrivacy', privacy);
+            
+            // Save notification settings
+            const clickNotifications = document.getElementById('clickNotifications').checked;
+            const weeklyReport = document.getElementById('weeklyReport').checked;
+            const expirationWarnings = document.getElementById('expirationWarnings').checked;
+            
+            localStorage.setItem('clickNotifications', clickNotifications);
+            localStorage.setItem('weeklyReport', weeklyReport);
+            localStorage.setItem('expirationWarnings', expirationWarnings);
+
+            // Show success message
+            showNotification('Configurações salvas com sucesso!', 'success');
+        }
+
+        // Password change
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                showNotification('As novas senhas não coincidem!', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showNotification('A senha deve ter pelo menos 6 caracteres!', 'error');
+                return;
+            }
+
+            // In a real app, this would call the API
+            showNotification('Senha atualizada com sucesso!', 'success');
+            
+            // Clear form
+            document.getElementById('passwordForm').reset();
+        });
+
+        // Generate API Key
+        function generateApiKey() {
+            const apiKey = 'lnk_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            document.getElementById('apiKey').value = apiKey;
+            localStorage.setItem('apiKey', apiKey);
+            showNotification('Chave da API gerada com sucesso!', 'success');
+        }
+
+        // Copy API Key
+        function copyApiKey() {
+            const apiKey = document.getElementById('apiKey').value;
+            if (!apiKey) {
+                showNotification('Nenhuma chave da API para copiar!', 'error');
+                return;
+            }
+            
+            navigator.clipboard.writeText(apiKey).then(() => {
+                showNotification('Chave da API copiada para a área de transferência!', 'success');
+            }).catch(() => {
+                showNotification('Falha ao copiar a chave da API!', 'error');
+            });
+        }
+
+        // Save custom domain
+        function saveCustomDomain() {
+            const domain = document.getElementById('customDomain').value;
+            localStorage.setItem('customDomain', domain);
+            showNotification('Custom domain saved!', 'success');
+        }
+
+        // Delete account modal
+        function showDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.getElementById('deleteModal').classList.add('flex');
+        }
+
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.remove('flex');
+        }
+
+        function deleteAccount() {
+            // In a real app, this would call the API to delete the account
+            alert('A exclusão da conta seria processada aqui.');
+            hideDeleteModal();
+        }
+
+        // Notification system
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        // Load settings when page loads
+        setTimeout(() => {
+            if (checkAuth()) {
+                loadSettings();
+            }
+        }, 500);
+    </script>
+</body>
+</html>

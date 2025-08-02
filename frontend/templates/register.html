@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar - Linkify{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <div class="mx-auto h-12 w-12 text-center">
+                <i class="fas fa-user-plus text-blue-600 text-4xl"></i>
+            </div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Crie sua conta
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Ou
+                <a href="/login" class="font-medium text-blue-600 hover:text-blue-500">
+                    entre na sua conta existente
+                </a>
+            </p>
+        </div>
+        
+        <form class="mt-8 space-y-6" id="registerForm">
+            <div class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Nome de usuário</label>
+                    <input 
+                        id="username" 
+                        name="username" 
+                        type="text" 
+                        required 
+                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                        placeholder="Escolha um nome de usuário"
+                    >
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input 
+                        id="email" 
+                        name="email" 
+                        type="email" 
+                        required 
+                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                        placeholder="seu@email.com"
+                    >
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input 
+                        id="password" 
+                        name="password" 
+                        type="password" 
+                        required 
+                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                        placeholder="Mínimo 6 caracteres"
+                        minlength="6"
+                    >
+                </div>
+                
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirmar senha</label>
+                    <input 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        type="password" 
+                        required 
+                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                        placeholder="Digite a senha novamente"
+                    >
+                </div>
+            </div>
+
+            <div class="flex items-center">
+                <input 
+                    id="terms" 
+                    name="terms" 
+                    type="checkbox" 
+                    required
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                >
+                <label for="terms" class="ml-2 block text-sm text-gray-900">
+                    Eu concordo com os 
+                    <a href="#" class="text-blue-600 hover:text-blue-500">termos de uso</a> 
+                    e 
+                    <a href="#" class="text-blue-600 hover:text-blue-500">política de privacidade</a>
+                </label>
+            </div>
+
+            <div>
+                <button 
+                    type="submit" 
+                    id="registerBtn"
+                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fas fa-user-plus text-blue-500 group-hover:text-blue-400" aria-hidden="true"></i>
+                    </span>
+                    Criar conta
+                </button>
+            </div>
+            
+            <!-- Success message -->
+            <div id="successMessage" class="hidden mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                <div class="flex">
+                    <i class="fas fa-check-circle mr-2 mt-0.5"></i>
+                    <span>Conta criada com sucesso! Redirecionando...</span>
+                </div>
+            </div>
+            
+            <!-- Error message -->
+            <div id="errorMessage" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                <div class="flex">
+                    <i class="fas fa-exclamation-circle mr-2 mt-0.5"></i>
+                    <span id="errorText"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const registerBtn = document.getElementById('registerBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    const errorText = document.getElementById('errorText');
+    
+    // Hide messages
+    errorMessage.classList.add('hidden');
+    successMessage.classList.add('hidden');
+    
+    // Validate passwords match
+    if (password !== confirmPassword) {
+        errorText.textContent = 'As senhas não coincidem';
+        errorMessage.classList.remove('hidden');
+        return;
+    }
+    
+    // Disable button and show loading
+    registerBtn.disabled = true;
+    registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Criando conta...';
+    
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Show success message
+            successMessage.classList.remove('hidden');
+            
+            // Redirect to login after 2 seconds
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
+        } else {
+            // Show error message
+            errorText.textContent = data.detail || data.message || 'Erro ao criar conta';
+            errorMessage.classList.remove('hidden');
+        }
+    } catch (error) {
+        errorText.textContent = 'Erro de conexão. Tente novamente.';
+        errorMessage.classList.remove('hidden');
+        console.error('Error:', error);
+    } finally {
+        // Re-enable button
+        registerBtn.disabled = false;
+        registerBtn.innerHTML = '<span class="absolute left-0 inset-y-0 flex items-center pl-3"><i class="fas fa-user-plus text-blue-500 group-hover:text-blue-400"></i></span>Criar conta';
+    }
+});
+</script>
+{% endblock %}

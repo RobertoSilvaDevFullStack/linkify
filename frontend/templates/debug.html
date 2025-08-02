@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Auth - Linkify</title>
+</head>
+<body>
+    <h1>Debug Auth Test</h1>
+    <div>
+        <p>Token status: <span id="tokenStatus">Checking...</span></p>
+        <p>Token value: <span id="tokenValue">Checking...</span></p>
+        <button onclick="clearToken()">Clear Token</button>
+        <button onclick="testLogin()">Test Login</button>
+        <a href="/analytics">Go to Analytics</a> |
+        <a href="/settings">Go to Settings</a> |
+        <a href="/profile">Go to Profile</a>
+    </div>
+
+    <script>
+        function checkToken() {
+            const token = localStorage.getItem('token');
+            document.getElementById('tokenStatus').textContent = token ? 'EXISTS' : 'NOT FOUND';
+            document.getElementById('tokenValue').textContent = token ? token.substring(0, 20) + '...' : 'None';
+        }
+
+        function clearToken() {
+            localStorage.removeItem('token');
+            checkToken();
+        }
+
+        async function testLogin() {
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        password: 'testpass123'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.access_token);
+                    alert('Login successful!');
+                    checkToken();
+                } else {
+                    alert('Login failed!');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Check token on load
+        checkToken();
+    </script>
+</body>
+</html>

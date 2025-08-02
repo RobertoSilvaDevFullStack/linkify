@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Login Simples</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-group { margin: 10px 0; }
+        input { padding: 10px; margin: 5px; width: 200px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Login Simplificado</h1>
+    
+    <form onsubmit="fazerLogin(event)">
+        <div class="form-group">
+            <label>Usuário:</label><br>
+            <input type="text" id="username" value="testuser" required>
+        </div>
+        <div class="form-group">
+            <label>Senha:</label><br>
+            <input type="password" id="password" value="testpass123" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    
+    <div id="result" class="result" style="display: none;"></div>
+    
+    <script>
+    async function fazerLogin(event) {
+        event.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const result = document.getElementById('result');
+        
+        result.style.display = 'block';
+        result.innerHTML = 'Fazendo login...';
+        
+        try {
+            console.log('Tentando login...');
+            
+            const response = await fetch('http://localhost:8000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    username: username,
+                    password: password
+                })
+            });
+            
+            console.log('Response status:', response.status);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Login successful:', data);
+                
+                result.innerHTML = `
+                    <h3 style="color: green;">LOGIN BEM-SUCEDIDO!</h3>
+                    <p><strong>Token:</strong> ${data.access_token.substring(0, 50)}...</p>
+                    <p><strong>Tipo:</strong> ${data.token_type}</p>
+                    <button onclick="irParaDashboard()">Ir para Dashboard</button>
+                `;
+                
+                // Salvar token
+                localStorage.setItem('linkify_token', data.access_token);
+                localStorage.setItem('linkify_user', username);
+                
+            } else {
+                const errorText = await response.text();
+                console.error('Login failed:', errorText);
+                result.innerHTML = `<h3 style="color: red;">ERRO DE LOGIN</h3><p>${errorText}</p>`;
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            result.innerHTML = `<h3 style="color: red;">ERRO DE REDE</h3><p>${error.message}</p>`;
+        }
+    }
+    
+    function irParaDashboard() {
+        window.location.href = 'http://localhost:8000/dashboard';
+    }
+    
+    // Verificar se já está logado
+    if (localStorage.getItem('linkify_token')) {
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = `
+            <h3 style="color: blue;">JÁ ESTÁ LOGADO</h3>
+            <button onclick="irParaDashboard()">Ir para Dashboard</button>
+            <button onclick="logout()">Logout</button>
+        `;
+    }
+    
+    function logout() {
+        localStorage.removeItem('linkify_token');
+        localStorage.removeItem('linkify_user');
+        window.location.reload();
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análises - Linkify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .sidebar-active { 
+            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 0 25px 25px 0;
+        }
+        .link-item:hover { background-color: #f9fafb; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-gray-900 text-white flex flex-col">
+            <!-- Logo -->
+            <div class="p-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-link text-gray-900 text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-bold">Linkify</h1>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 px-4">
+                <div class="space-y-2">
+                    <a href="/dashboard" class="block px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-home w-5"></i>
+                            <span class="font-medium">Painel</span>
+                        </div>
+                    </a>
+                    <div class="px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-plus w-5"></i>
+                            <span class="font-medium">Criar Novo Link</span>
+                        </div>
+                    </div>
+                    <div class="px-4 py-3 sidebar-active mr-4">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-chart-bar w-5"></i>
+                            <span class="font-medium">Análises</span>
+                        </div>
+                    </div>
+                    <a href="/settings" class="block px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-cog w-5"></i>
+                            <span class="font-medium">Configurações</span>
+                        </div>
+                    </a>
+                    <a href="/profile" class="block px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-user w-5"></i>
+                            <span class="font-medium">Perfil</span>
+                        </div>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-6 border-t border-gray-700">
+                <a href="/profile" class="flex items-center space-x-3 hover:bg-gray-800 p-2 rounded-lg transition-colors">
+                    <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-xs"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-white font-medium text-sm" id="username">testuser</div>
+                        <div class="text-gray-400 text-xs">Ver Perfil</div>
+                    </div>
+                    <button onclick="logout()" class="text-gray-400 hover:text-red-400 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="bg-white shadow-sm border-b p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Análises</h2>
+                        <p class="text-gray-600 mt-1">Insights detalhados sobre seus links encurtados</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-palette text-blue-500"></i>
+                            <span class="text-blue-700 font-medium">Tailwind CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 overflow-auto p-6">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    Painel
+                </a>
+                <a href="/dashboard" class="flex items-center px-6 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <i class="fas fa-plus mr-3"></i>
+                    Criar Novo Link
+                </a>
+                <a href="/analytics" class="flex items-center px-6 py-3 bg-blue-50 text-blue-600 border-r-2 border-blue-600">
+                    <i class="fas fa-chart-bar mr-3"></i>
+                    Análises
+                </a>
+                <a href="/settings" class="flex items-center px-6 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <i class="fas fa-cog mr-3"></i>
+                    Configurações
+                </a>
+                <a href="/profile" class="flex items-center px-6 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <i class="fas fa-user mr-3"></i>
+                    Perfil
+                </a>
+            </nav>
+
+            <div class="absolute bottom-0 w-64 p-6">
+                <button onclick="logout()" class="flex items-center text-gray-600 hover:text-red-600 transition-colors">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    Sair
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Análises</h2>
+                <p class="text-gray-600">Insights detalhados sobre seus links encurtados</p>
+            </div>
+
+            <!-- Mensagem de Carregamento -->
+            <div id="loadingMessage" class="text-center py-8">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="mt-4 text-gray-600">Carregando dados de análise...</p>
+            </div>
+
+            <!-- Conteúdo Principal (oculto inicialmente) -->
+            <div id="mainContent" style="display: none;">
+                <!-- Cards de Estatísticas -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl card-shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 mr-4">
+                            <i class="fas fa-link text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">Total de Links</p>
+                            <p class="text-2xl font-bold text-gray-800" id="totalLinks">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl card-shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 mr-4">
+                            <i class="fas fa-mouse-pointer text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">Total de Cliques</p>
+                            <p class="text-2xl font-bold text-gray-800" id="totalClicks">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl card-shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 mr-4">
+                            <i class="fas fa-calendar text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">Este Mês</p>
+                            <p class="text-2xl font-bold text-gray-800" id="monthlyClicks">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl card-shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-orange-100 mr-4">
+                            <i class="fas fa-chart-line text-orange-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">CTR Médio</p>
+                            <p class="text-2xl font-bold text-gray-800" id="avgCtr">0%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-xl card-shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Cliques ao Longo do Tempo</h3>
+                    <canvas id="clicksChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="bg-white rounded-xl card-shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Links Mais Performáticos</h3>
+                    <canvas id="topLinksChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Tabela de Atividade Recente -->
+            <div class="bg-white rounded-xl card-shadow">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800">Atividade Recente dos Links</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL Curta</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL Original</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliques</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Criado</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="linksTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Linhas da tabela serão populadas pelo JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div> <!-- End mainContent -->
+        </div>
+    </div>
+
+    <script>
+        let isAuthenticated = false;
+        
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+            console.log('Checking auth, token:', token ? 'exists' : 'not found');
+            
+            if (!token) {
+                console.log('Nenhum token encontrado, mostrando mensagem de login');
+                document.getElementById('loadingMessage').innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-800 mb-2">Autenticação Necessária</h3>
+                        <p class="text-gray-600 mb-4">Por favor, faça login para visualizar as análises</p>
+                        <a href="/login" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                            Ir para Login
+                        </a>
+                    </div>
+                `;
+                return false;
+            }
+            
+            isAuthenticated = true;
+            return true;
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+            localStorage.removeItem('linkify_user');
+            window.location.href = '/login';
+        }
+
+        // Load analytics data
+        async function loadAnalytics() {
+            if (!isAuthenticated) {
+                console.log('Not authenticated, skipping load');
+                return;
+            }
+            
+            const token = localStorage.getItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+            
+            try {
+                const response = await fetch('/api/links/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    console.log('Token expirado, redirecionando para login');
+                    localStorage.removeItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+                    window.location.href = '/login';
+                    return;
+                }
+
+                if (response.ok) {
+                    const links = await response.json();
+                    
+                    // Ocultar carregamento e mostrar conteúdo
+                    document.getElementById('loadingMessage').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    
+                    updateStats(links);
+                    updateCharts(links);
+                    updateTable(links);
+                } else {
+                    console.error('Falha ao carregar análises');
+                    document.getElementById('loadingMessage').innerHTML = '<p class="text-red-600">Falha ao carregar dados de análise</p>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar análises:', error);
+                document.getElementById('loadingMessage').innerHTML = '<p class="text-red-600">Erro ao carregar dados de análise</p>';
+            }
+        }
+
+        function updateStats(links) {
+            const totalLinks = links.length;
+            const totalClicks = links.reduce((sum, link) => sum + link.clicks, 0);
+            
+            // Calcular cliques mensais (últimos 30 dias)
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            const monthlyClicks = links
+                .filter(link => new Date(link.created_at) > thirtyDaysAgo)
+                .reduce((sum, link) => sum + link.clicks, 0);
+
+            const avgCtr = totalLinks > 0 ? (totalClicks / totalLinks).toFixed(1) : 0;
+
+            document.getElementById('totalLinks').textContent = totalLinks;
+            document.getElementById('totalClicks').textContent = totalClicks;
+            document.getElementById('monthlyClicks').textContent = monthlyClicks;
+            document.getElementById('avgCtr').textContent = avgCtr + '%';
+        }
+
+        function updateCharts(links) {
+            // Gráfico de cliques ao longo do tempo
+            const ctx1 = document.getElementById('clicksChart').getContext('2d');
+            
+            // Agrupar links por data
+            const clicksByDate = {};
+            links.forEach(link => {
+                const date = new Date(link.created_at).toDateString();
+                clicksByDate[date] = (clicksByDate[date] || 0) + link.clicks;
+            });
+
+            const dates = Object.keys(clicksByDate).slice(-7); // Últimos 7 dias
+            const clicks = dates.map(date => clicksByDate[date] || 0);
+
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Cliques',
+                        data: clicks,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de links mais performáticos
+            const ctx2 = document.getElementById('topLinksChart').getContext('2d');
+            
+            const topLinks = links
+                .sort((a, b) => b.clicks - a.clicks)
+                .slice(0, 5);
+
+            const linkLabels = topLinks.map(link => link.short_code);
+            const linkClicks = topLinks.map(link => link.clicks);
+
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: linkLabels,
+                    datasets: [{
+                        label: 'Cliques',
+                        data: linkClicks,
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTable(links) {
+            const tbody = document.getElementById('linksTable');
+            tbody.innerHTML = '';
+
+            links.slice(0, 10).forEach(link => {
+                const row = tbody.insertRow();
+                const isExpired = link.expires_at && new Date(link.expires_at) < new Date();
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${link.short_code}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500 truncate max-w-xs">${link.original_url}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${link.clicks}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${new Date(link.created_at).toLocaleDateString()}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${isExpired ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                            ${isExpired ? 'Expirado' : 'Ativo'}
+                        </span>
+                    </td>
+                `;
+            });
+        }
+
+        // Carregar dados quando a página carrega
+        setTimeout(() => {
+            if (checkAuth()) {
+                loadAnalytics();
+            }
+        }, 500);
+    </script>
+</body>
+</html>

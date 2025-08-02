@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Linkify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .sidebar-active {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-gray-900 shadow-lg">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-white">Linkify</h1>
+            </div>
+            
+            <nav class="mt-6 px-4 space-y-2">
+                <a href="/dashboard" class="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200">
+                    <i class="fas fa-chart-line mr-3 w-5"></i>
+                    Painel
+                </a>
+                <a href="/dashboard" class="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200">
+                    <i class="fas fa-plus mr-3 w-5"></i>
+                    Criar Novo Link
+                </a>
+                <a href="/analytics" class="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200">
+                    <i class="fas fa-chart-bar mr-3 w-5"></i>
+                    Análises
+                </a>
+                <a href="/settings" class="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200">
+                    <i class="fas fa-cog mr-3 w-5"></i>
+                    Configurações
+                </a>
+                <a href="/profile" class="flex items-center px-4 py-3 rounded-lg sidebar-active">
+                    <i class="fas fa-user mr-3 w-5"></i>
+                    Perfil
+                </a>
+            </nav>
+
+            <div class="absolute bottom-0 w-64 p-6">
+                <button onclick="logout()" class="flex items-center text-gray-300 hover:text-red-400 transition-colors">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    Sair
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Perfil</h2>
+                <p class="text-gray-600">Gerencie suas informações pessoais e detalhes da conta</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Foto de Perfil e Informações Básicas -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <div class="text-center">
+                            <div class="mx-auto w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-user text-4xl text-blue-600"></i>
+                            </div>
+                            <button onclick="changeProfilePicture()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors mb-4">
+                                Alterar Foto
+                            </button>
+                            <input type="file" id="profilePicture" accept="image/*" class="hidden" onchange="handleProfilePictureChange(event)">
+                            
+                            <h3 class="text-xl font-semibold text-gray-800" id="profileUsername">Carregando...</h3>
+                            <p class="text-gray-600" id="profileEmail">Carregando...</p>
+                            <p class="text-sm text-gray-500 mt-2">Membro desde <span id="memberSince">Carregando...</span></p>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Total de Links</span>
+                                    <span class="font-semibold text-gray-800" id="totalLinksProfile">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Total de Cliques</span>
+                                    <span class="font-semibold text-gray-800" id="totalClicksProfile">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Links Ativos</span>
+                                    <span class="font-semibold text-gray-800" id="activeLinksProfile">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ações Rápidas -->
+                    <div class="bg-white rounded-xl card-shadow p-6 mt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Ações Rápidas</h4>
+                        <div class="space-y-3">
+                            <a href="/dashboard" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-md transition-colors">
+                                <i class="fas fa-plus mr-3"></i>
+                                Criar Novo Link
+                            </a>
+                            <a href="/analytics" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-md transition-colors">
+                                <i class="fas fa-chart-bar mr-3"></i>
+                                Ver Análises
+                            </a>
+                            <button onclick="exportData()" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-md transition-colors w-full text-left">
+                                <i class="fas fa-download mr-3"></i>
+                                Exportar Dados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Form -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl card-shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Informações Pessoais</h3>
+                        </div>
+                        <div class="p-6">
+                            <form id="profileForm" class="space-y-6">
+                                <!-- Informações Básicas -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="firstName" class="block text-sm font-medium text-gray-700">Nome</label>
+                                        <input type="text" id="firstName" name="firstName" 
+                                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="lastName" class="block text-sm font-medium text-gray-700">Sobrenome</label>
+                                        <input type="text" id="lastName" name="lastName" 
+                                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Endereço de Email</label>
+                                    <input type="email" id="email" name="email" 
+                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+
+                                <div>
+                                    <label for="username" class="block text-sm font-medium text-gray-700">Nome de Usuário</label>
+                                    <input type="text" id="username" name="username" 
+                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+
+                                <!-- Informações de Contato -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="phone" class="block text-sm font-medium text-gray-700">Número de Telefone</label>
+                                        <input type="tel" id="phone" name="phone" 
+                                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="company" class="block text-sm font-medium text-gray-700">Empresa</label>
+                                        <input type="text" id="company" name="company" 
+                                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <!-- Bio -->
+                                <div>
+                                    <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+                                    <textarea id="bio" name="bio" rows="4" 
+                                              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                              placeholder="Conte-nos sobre você..."></textarea>
+                                </div>
+
+                                <!-- Links Sociais -->
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Links Sociais</h4>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fab fa-twitter text-blue-400"></i>
+                                            <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/usuario"
+                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fab fa-linkedin text-blue-600"></i>
+                                            <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/usuario"
+                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fab fa-github text-gray-800"></i>
+                                            <input type="url" id="github" name="github" placeholder="https://github.com/usuario"
+                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fas fa-globe text-gray-600"></i>
+                                            <input type="url" id="website" name="website" placeholder="https://seu-site.com"
+                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Preferências -->
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Preferências</h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label for="timezone" class="block text-sm font-medium text-gray-700">Fuso Horário</label>
+                                            <select id="timezone" name="timezone" 
+                                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="UTC">UTC</option>
+                                                <option value="America/New_York">Eastern Time</option>
+                                                <option value="America/Chicago">Central Time</option>
+                                                <option value="America/Denver">Mountain Time</option>
+                                                <option value="America/Los_Angeles">Pacific Time</option>
+                                                <option value="America/Sao_Paulo">Brasília Time</option>
+                                                <option value="Europe/London">London Time</option>
+                                                <option value="Europe/Paris">Central European Time</option>
+                                                <option value="Asia/Tokyo">Japan Time</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="language" class="block text-sm font-medium text-gray-700">Idioma</label>
+                                            <select id="language" name="language" 
+                                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="en">English</option>
+                                                <option value="pt-BR">Português (Brasil)</option>
+                                                <option value="es">Español</option>
+                                                <option value="fr">Français</option>
+                                                <option value="de">Deutsch</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botão Salvar -->
+                                <div class="flex justify-end">
+                                    <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors">
+                                        Salvar Alterações
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Atividade da Conta -->
+                    <div class="bg-white rounded-xl card-shadow mt-8">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Atividade Recente</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4" id="recentActivity">
+                                <!-- Itens de atividade serão populados pelo JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAuthenticated = false;
+        
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+            console.log('Profile: Checking auth, token:', token ? 'exists' : 'not found');
+            
+            if (!token) {
+                console.log('Profile: No token found, showing login message');
+                document.body.innerHTML = `
+                    <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-800 mb-2">Autenticação Necessária</h3>
+                            <p class="text-gray-600 mb-4">Por favor, faça login para acessar seu perfil</p>
+                            <a href="/login" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                Fazer Login
+                            </a>
+                        </div>
+                    </div>
+                `;
+                return false;
+            }
+            
+            isAuthenticated = true;
+            return true;
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+            localStorage.removeItem('linkify_user');
+            window.location.href = '/login';
+        }
+
+        // Load profile data
+        async function loadProfile() {
+            try {
+                // Load user info (in a real app, this would come from the API)
+                const savedProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                
+                // Set default values or load saved ones
+                document.getElementById('profileUsername').textContent = savedProfile.username || 'testuser';
+                document.getElementById('profileEmail').textContent = savedProfile.email || 'test@example.com';
+                document.getElementById('memberSince').textContent = savedProfile.memberSince || 'January 2024';
+                
+                // Fill form fields
+                document.getElementById('firstName').value = savedProfile.firstName || '';
+                document.getElementById('lastName').value = savedProfile.lastName || '';
+                document.getElementById('email').value = savedProfile.email || 'test@example.com';
+                document.getElementById('username').value = savedProfile.username || 'testuser';
+                document.getElementById('phone').value = savedProfile.phone || '';
+                document.getElementById('company').value = savedProfile.company || '';
+                document.getElementById('bio').value = savedProfile.bio || '';
+                document.getElementById('twitter').value = savedProfile.twitter || '';
+                document.getElementById('linkedin').value = savedProfile.linkedin || '';
+                document.getElementById('github').value = savedProfile.github || '';
+                document.getElementById('website').value = savedProfile.website || '';
+                document.getElementById('timezone').value = savedProfile.timezone || 'UTC';
+                document.getElementById('language').value = savedProfile.language || 'en';
+
+                // Load stats
+                loadProfileStats();
+                loadRecentActivity();
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // Load profile stats
+        async function loadProfileStats() {
+            if (!isAuthenticated) {
+                console.log('Profile: Not authenticated, skipping stats load');
+                return;
+            }
+            
+            const token = localStorage.getItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+            
+            try {
+                const response = await fetch('/api/links/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    console.log('Token expired, redirecting to login');
+                    localStorage.removeItem('linkify_token'); // Changed from 'token' to 'linkify_token'
+                    window.location.href = '/login';
+                    return;
+                }
+
+                if (response.ok) {
+                    const links = await response.json();
+                    const totalLinks = links.length;
+                    const totalClicks = links.reduce((sum, link) => sum + link.clicks, 0);
+                    const activeLinks = links.filter(link => !link.expires_at || new Date(link.expires_at) > new Date()).length;
+
+                    document.getElementById('totalLinksProfile').textContent = totalLinks;
+                    document.getElementById('totalClicksProfile').textContent = totalClicks;
+                    document.getElementById('activeLinksProfile').textContent = activeLinks;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load recent activity
+        function loadRecentActivity() {
+            const activities = [
+                { action: 'Created new link', detail: 'https://example.com', time: '2 hours ago', icon: 'fas fa-plus' },
+                { action: 'Link clicked', detail: 'abc123', time: '4 hours ago', icon: 'fas fa-mouse-pointer' },
+                { action: 'Updated profile', detail: 'Personal information', time: '1 day ago', icon: 'fas fa-user-edit' },
+                { action: 'Generated API key', detail: 'API access', time: '2 days ago', icon: 'fas fa-key' },
+                { action: 'Exported data', detail: 'CSV format', time: '1 week ago', icon: 'fas fa-download' }
+            ];
+
+            const container = document.getElementById('recentActivity');
+            container.innerHTML = '';
+
+            activities.forEach(activity => {
+                const activityElement = document.createElement('div');
+                activityElement.className = 'flex items-center space-x-4';
+                activityElement.innerHTML = `
+                    <div class="p-2 bg-blue-100 rounded-full">
+                        <i class="${activity.icon} text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-800">${activity.action}</p>
+                        <p class="text-sm text-gray-500">${activity.detail}</p>
+                    </div>
+                    <div class="text-sm text-gray-500">${activity.time}</div>
+                `;
+                container.appendChild(activityElement);
+            });
+        }
+
+        // Handle profile form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const profileData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                profileData[key] = value;
+            }
+
+            // Save to localStorage (in a real app, this would be sent to the API)
+            localStorage.setItem('userProfile', JSON.stringify(profileData));
+            
+            // Update profile display
+            document.getElementById('profileUsername').textContent = profileData.username;
+            document.getElementById('profileEmail').textContent = profileData.email;
+            
+            showNotification('Perfil atualizado com sucesso!', 'success');
+        });
+
+        // Change profile picture
+        function changeProfilePicture() {
+            document.getElementById('profilePicture').click();
+        }
+
+        function handleProfilePictureChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // In a real app, you would upload this to the server
+                    showNotification('Profile picture updated!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Export data
+        function exportData() {
+            // In a real app, this would generate and download a CSV/JSON file
+            const data = {
+                profile: JSON.parse(localStorage.getItem('userProfile') || '{}'),
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'linkify-profile-data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Dados do perfil exportados com sucesso!', 'success');
+        }
+
+        // Notification system
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        // Load profile when page loads
+        setTimeout(() => {
+            if (checkAuth()) {
+                loadProfile();
+            }
+        }, 500);
+    </script>
+</body>
+</html>

@@ -94,9 +94,9 @@ security = HTTPBearer()
 
 # Templates com fallback
 try:
-    templates = Jinja2Templates(directory="frontend/templates")
+    templates = Jinja2Templates(directory="api/frontend/templates")
     # Static files
-    app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+    app.mount("/static", StaticFiles(directory="api/frontend/static"), name="static")
 except Exception as e:
     print(f"⚠️ Templates/Static não encontrados: {e}")
     templates = None

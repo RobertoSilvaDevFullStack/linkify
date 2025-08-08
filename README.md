@@ -28,19 +28,30 @@ vercel --prod
 
 ### 3. Configure as variáveis no Vercel Dashboard:
 ```env
-DATABASE_URL=postgresql://user:pass@host:5432/linkify
+# Supabase
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_KEY=sua-supabase-anon-key
+DATABASE_URL=postgresql://postgres:senha@db.seu-projeto.supabase.co:5432/postgres
+
+# OAuth
 GOOGLE_CLIENT_ID=sua-google-client-id
 GOOGLE_CLIENT_SECRET=seu-google-client-secret
 GITHUB_CLIENT_ID=sua-github-client-id
 GITHUB_CLIENT_SECRET=seu-github-client-secret
+SECRET_KEY=sua-chave-secreta-256bits
 ```
+
+## 🗄️ Setup Supabase
+
+**Guia completo**: [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 
 ## 🛠️ Tecnologias
 
 - **Backend**: FastAPI, SQLAlchemy, PostgreSQL
 - **Frontend**: HTML5, Tailwind CSS, JavaScript
+- **Database**: Supabase (PostgreSQL)
 - **Auth**: OAuth2, JWT, Authlib
-- **Deploy**: Vercel, Neon Database
+- **Deploy**: Vercel
 
 ## 📋 OAuth Setup
 

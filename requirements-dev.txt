@@ -1,5 +1,6 @@
+# Requirements para desenvolvimento (Windows)
 fastapi==0.104.1
-uvicorn[standard]==0.24.0
+uvicorn==0.24.0
 sqlalchemy==2.0.23
 bcrypt==4.1.1
 python-jose[cryptography]==3.3.0
@@ -11,8 +12,8 @@ httpx==0.25.2
 python-dotenv==1.0.0
 starlette==0.27.0
 itsdangerous==2.1.2
-psycopg2-binary==2.9.9
+# Para Windows - usar uma dessas opções:
+# psycopg2==2.9.9
+# OU usar SQLite para desenvolvimento local:
+# (sem psycopg2, o SQLite será usado automaticamente)
 supabase==2.3.4
-passlib[bcrypt]==1.7.4
-pydantic==2.5.0
-pydantic-settings==2.1.0

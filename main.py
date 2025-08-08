@@ -28,7 +28,7 @@ load_dotenv()
 from oauth_config import setup_oauth, OAUTH_CONFIG
 
 # Configurações
-SECRET_KEY = "your-secret-key-change-in-production"
+SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key-change-in-production')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -39,10 +39,28 @@ DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///./linkify.db')
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
+print(f"🗄️  Database: {DATABASE_URL.split('@')[0]}@[hidden]" if '@' in DATABASE_URL else f"🗄️  Database: {DATABASE_URL}")
+
 # Configurar engine baseado no tipo de banco
-if DATABASE_URL.startswith('postgresql://'):
-    engine = create_engine(DATABASE_URL)
-else:
+try:
+    if DATABASE_URL.startswith('postgresql://'):
+        # Tentar importar psycopg2
+        try:
+            import psycopg2
+            engine = create_engine(DATABASE_URL)
+            print("✅ PostgreSQL configurado com psycopg2")
+        except ImportError:
+            print("⚠️  psycopg2 não encontrado. Usando SQLite para desenvolvimento.")
+            DATABASE_URL = 'sqlite:///./linkify.db'
+            engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+    else:
+        engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+        print("✅ SQLite configurado para desenvolvimento")
+except Exception as e:
+    print(f"⚠️  Erro na configuração do banco: {e}")
+    print("🔄 Usando SQLite como fallback")
+    DATABASE_URL = 'sqlite:///./linkify.db'
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -194,8 +212,8 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     )
     try:
         payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        username = payload.get("sub")
+        if username is None or not isinstance(username, str):
             raise credentials_exception
     except JWTError:
         raise credentials_exception
@@ -290,7 +308,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 def login(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     """Login do usuário"""
     user = db.query(User).filter(User.username == username).first()
-    if not user or not verify_password(password, user.hashed_password):
+    hashed_password = getattr(user, 'hashed_password', None) if user else None
+    if not user or not hashed_password or not verify_password(password, str(hashed_password)):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -373,7 +392,7 @@ def create_demo_link(original_url: str = Form(...), custom_code: Optional[str] =
         "short_code": db_link.short_code,
         "clicks": db_link.clicks,
         "created_at": db_link.created_at.isoformat(),
-        "expires_at": db_link.expires_at.isoformat() if db_link.expires_at else None
+        "expires_at": db_link.expires_at.isoformat() if db_link.expires_at is not None else None
     }
 
 @app.get("/api/links", response_model=list[LinkResponse])
@@ -416,14 +435,15 @@ def redirect_link(short_code: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Link not found")
     
     # Check if expired
-    if link.expires_at and datetime.utcnow() > link.expires_at:
+    expires_at = getattr(link, 'expires_at')
+    if expires_at is not None and datetime.utcnow() > expires_at:
         raise HTTPException(status_code=410, detail="Link expired")
     
-    # Increment clicks
-    link.clicks += 1
+    # Increment clicks using update query
+    db.query(Link).filter(Link.id == link.id).update({Link.clicks: Link.clicks + 1})
     db.commit()
     
-    return RedirectResponse(url=link.original_url, status_code=302)
+    return RedirectResponse(url=str(link.original_url), status_code=302)
 
 # ====== ROTAS OAUTH2 ======
 
@@ -473,6 +493,9 @@ async def oauth_callback(provider: str, request: Request):
         # Obter informações do usuário
         user_info = await get_user_info_from_provider(client, token, provider)
         
+        if user_info is None:
+            raise HTTPException(status_code=500, detail="Erro ao obter dados do usuário")
+        
         # Criar ou encontrar usuário no banco
         db = SessionLocal()
         try:
@@ -509,7 +532,7 @@ async def oauth_callback(provider: str, request: Request):
         # Redirecionar para login com erro
         return RedirectResponse(url="/?error=oauth_failed", status_code=302)
 
-async def get_user_info_from_provider(client, token, provider: str):
+async def get_user_info_from_provider(client, token, provider: str) -> Optional[dict]:
     """Obtém informações do usuário do provedor OAuth"""
     try:
         if provider == 'google':
@@ -562,7 +585,7 @@ async def get_user_info_from_provider(client, token, provider: str):
     
     except Exception as e:
         print(f"Erro ao obter dados do usuário {provider}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Erro ao obter dados do usuário")
+        return None
 
 def get_or_create_oauth_user(db: Session, user_info: dict, provider: str):
     """Cria ou encontra usuário OAuth no banco de dados"""
@@ -575,11 +598,15 @@ def get_or_create_oauth_user(db: Session, user_info: dict, provider: str):
         # Procurar por email existente
         user = db.query(User).filter(User.email == user_info['email']).first()
         if user:
-            # Atualizar usuário existente com dados OAuth
-            user.oauth_provider = provider
-            user.oauth_id = user_info['id']
-            user.avatar_url = user_info.get('picture', '')
-            user.full_name = user_info.get('name', '')
+            # Atualizar usuário existente com dados OAuth usando update query
+            db.query(User).filter(User.id == user.id).update({
+                User.oauth_provider: provider,
+                User.oauth_id: user_info['id'],
+                User.avatar_url: user_info.get('picture', ''),
+                User.full_name: user_info.get('name', '')
+            })
+            db.commit()
+            db.refresh(user)
         else:
             # Criar novo usuário
             username = user_info['username']
